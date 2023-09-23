@@ -17,12 +17,12 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     public List<Article> findLatest(int count){
         PageRequest pageRequest = PageRequest.of(0, count);
-        return articleRepository.firndByOrderByIdDesc(pageRequest);
+        return articleRepository.findByOrderByIdDesc(pageRequest);
     }
 
    public List<Article> findLatestAfterId(int count, long lastId) {
       PageRequest pageRequest = PageRequest.of(0, count);
-        if ( lastId == 0 ) return articleRepository.firndByOrderByIdDesc(pageRequest);
+        if ( lastId == 0 ) return articleRepository.findByOrderByIdDesc(pageRequest);
             return articleRepository.findByIdLessThanOrderByIdDesc(lastId, pageRequest);
      }
 

@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article,Long> {
-    List<Article> firndByOrderByIdDesc(PageRequest pageRequest);
-    List<Article> findByIdLessThanOrderByIdDesc(Long id,PageRequest pageRequest);
-    List<Article> findByEventDateBetweenOrderByEventDateAsc(LocalDate startDate,LocalDate endDate);
+    List<Article> findByOrderByIdDesc(PageRequest pageRequest);
+    List<Article> findByIdLessThanOrderByIdDesc(Long id, PageRequest pageRequest);
+    List<Article> findByEventDateBetweenOrderByEventDateAsc(LocalDate startDate, LocalDate endDate);
+
 }
