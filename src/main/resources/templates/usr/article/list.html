@@ -1,10 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<div class="article-list-vue-app">
+    <h1>Article List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="article in articles" :key="article.id">
+                <td>{{article.id}}</td>
+                <td>{{article.title}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <button :disabled="loading || noMoreData" @click="loadMore">{{buttonText}}</button>
+    </div>
+</div>
+<script>
+    const fetchArticles = (lastId) => fetch(`listMore?lastId=${lastId}`).then(response => response.json());
+    const app = Vue.createApp({
+        setup(){
+          const articles = Vue.ref([]);
+          const lastId = Vue.ref(0);
+          const loading = Vue.ref(false);
+          const buttonText = Vue.ref("더 보기");
+          const noMoreData = Vue.ref(false);
 
-</body>
-</html>
+          const loadMore = async()=>{
+            if(noMoreData.value) return;
+            if(loading.value) return;
+            loading.value = true;
+            try{
+                const rs = await fetchArticles(lastId.value);
+                if(rs.resultCode === 'S-2'){
+                    noMoreData.value = true;
+                    buttonText.value = "더 이상 내용이 없습니다.";
+                    throw new Error("End of pages");
+                }
+                articles.value.push(...rs.data);
+                lastId.value = rs.lastId;
+            }catch(error){
+                console.error(error);
+            }finally{
+                loading.value=false;
+            }
+          };
+          Vue.onMounted(()=>{
+             const obServer = new IntersectionObserver(async(entries)=>{
+                 if(entries[0].isIntersecting){
+                     await loadMore();
+                 }
+             },{});
+             obServer.observe(document.querySelector(".article-list-vue-app button"));
+          });
+          return{
+              articles,
+              loadMore,
+              buttonText,
+              loading,
+              noMoreData
+          };
+        }
+    }).mount(".article-list-vue-app");
+</script>

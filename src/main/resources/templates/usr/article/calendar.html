@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<a th:href="@{'/article/calendar/' + ${prevYear} + '/' + ${prevMonth}}">
+    <span th:text="|이전달(${prevYear}/${prevMonth})|"></span>
+</a>
 
-</body>
-</html>
+<h1 th:text="'Calendar for ' + ${year} + ' ' + ${formattedMonth}"></h1>
+
+<div class="calendar">
+    <div class="day">일</div>
+    <div class="day">월</div>
+    <div class="day">화</div>
+    <div class="day">수</div>
+    <div class="day">목</div>
+    <div class="day">금</div>
+    <div class="day">토</div>
+
+    <!-- Fill empty days before the start -->
+    <div th:each="n: ${#numbers.sequence(1, firstDayOfMonth - 1)}" class="day"></div>
+
+    <!-- Days of the month -->
+    <div th:each="n: ${#numbers.sequence(1, (daysInMonth ?: 0))}" class="day">
+        <span th:text="|${n}일|"></span>
+        <ul>
+            <li th:each="article : ${forCalendarArticles.get(n)}" th:text="|${article.id}, ${article.title}|"></li>
+        </ul>
+    </div>
+</div>
+
+<a th:href="@{'/article/calendar/' + ${nextYear} + '/' + ${nextMonth}}">
+    <span th:text="|다음달(${nextYear}/${nextMonth})|"></span>
+</a>
+
+<style>
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+    }
+
+    .day {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+</style>
